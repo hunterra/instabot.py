@@ -565,7 +565,7 @@ class InstaBot:
             if (self.bot_mode == 0) :
                 for f in self.bot_follow_list:
                     if time.time() > (f[1] + self.follow_time):
-                        log_string = "Trying to unfollow #%i: "
+                        log_string = "Trying to unfollow #%i: " % (f[0])
                         self.write_log(log_string)
                         self.auto_unfollow()
                         self.bot_follow_list.remove(f)
@@ -638,15 +638,15 @@ class InstaBot:
             self.get_media_id_recent_feed()
         if len(self.media_on_feed) != 0 :
             chooser = random.randint(0,len(self.media_on_feed)-1)
-            current_id=self.media_on_feed[chooser]["owner"]["id"]
-            current_user=self.media_on_feed[chooser]["owner"]["username"]
+            current_id=self.media_on_feed[chooser]["node"]["owner"]["id"]
+            current_user=self.media_on_feed[chooser]["node"]["owner"]["username"]
             
             while checking:
                 for wluser in self.unfollow_whitelist:
                     if wluser == current_user:
                         chooser = random.randint(0,len(self.media_on_feed)-1)
-                        current_id=self.media_on_feed[chooser]["owner"]["id"]
-                        current_user=self.media_on_feed[chooser]["owner"]["username"]
+                        current_id=self.media_on_feed[chooser]["node"]["owner"]["id"]
+                        current_user=self.media_on_feed[chooser]["node"]["owner"]["username"]
                         log_string = ("found whitelist user, starting search again")
                         self.write_log(log_string)
                         break;
@@ -767,8 +767,8 @@ class InstaBot:
                                    : all_data_end]
                     all_data = json.loads(json_str)
 
-                    self.media_on_feed = list(all_data['entry_data']['FeedPage'][0]\
-                                            ['feed']['media']['nodes'])
+                    self.media_on_feed = all_data['entry_data']['FeedPage'][0]\
+                                            ['graphql']['user']['edge_web_feed_timeline']['edges']
                     log_string="Media in recent feed = %i"%(len(self.media_on_feed))
                     self.write_log(log_string)
                 except:
